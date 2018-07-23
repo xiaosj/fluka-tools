@@ -1,5 +1,5 @@
 # FLUKA Tools
-This is a collection of various tools for [FLUKA] (http://www.fluka.org/fluka.php).
+This is a collection of various tools for [FLUKA](http://www.fluka.org/fluka.php).
 
 
 ## usbin.py
