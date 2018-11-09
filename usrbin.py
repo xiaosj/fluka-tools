@@ -74,12 +74,14 @@ class usrbin:
         self.Birk1 = h['Birk1'][0]
         self.Birk2 = h['Birk2'][0]
         self.timeCutOff = h['timeCutOff'][0]
+        self.shape = (self.nx, self.ny, self.nz)
+        self.grid = (self.dx, self.dy, self.dz)
 
 
 #
 # Read USRBIN binary file       
 #
-def read(filename):
+def ReadUsrbin(filename):
     try:
         f = open(filename, 'rb')
     except:
