@@ -50,10 +50,13 @@ class usrbin:
         self.summary = s['Title'][0].decode('ascii')
         self.time = s['Time'][0].decode('ascii')
         self.totalWeight = s['Weight'][0]
+        self._prime = s['Prime'][0]
+        self._mcase = s['mcase'][0]
         self.totalPrime  = s['Prime'][0] + np.int64(s['mcase'][0])*1000000000
         self.nbatch = s['nbatch'][0]
 
     def setRecordHead(self, h):
+        self.MB = h['MB'][0]
         self.idx = h['idx'][0]
         self.name = h['Name'][0].decode('ascii')
         self.binType = h['binType'][0]
@@ -77,6 +80,60 @@ class usrbin:
         self.shape = (self.nx, self.ny, self.nz)
         self.grid = (self.dx, self.dy, self.dz)
 
+
+    def write(self, filename):
+        try:
+            f = open(filename, 'wb')
+        except:
+            raise Exception('Fail to open {:s}'.format(filename))
+        
+        # Write summary head
+        f.write(b'\x80\x00\x00\x00')
+        f.write(self.summary.encode('ascii'))
+        f.write(self.time.encode('ascii'))
+        f.write(self.totalWeight)
+        f.write(self._prime)
+        f.write(self._mcase)
+        f.write(self.nbatch)
+
+        # Write record head
+        f.write(b'\x80\x00\x00\x00')
+        f.write(self.MB)
+        f.write(self.idx)
+        f.write(self.name.encode('ascii'))
+        f.write(self.binType)
+        f.write(self.particleType)
+        f.write(self.x0)
+        f.write(self.x1)
+        f.write(self.nx)
+        f.write(self.dx)
+        f.write(self.y0)
+        f.write(self.y1)
+        f.write(self.ny)
+        f.write(self.dy)
+        f.write(self.z0)
+        f.write(self.z1)
+        f.write(self.nz)
+        f.write(self.dz)
+        f.write(self.lntzer)
+        f.write(self.Birk1)
+        f.write(self.Birk2)
+        f.write(self.timeCutOff)
+
+        f.write(b'V\x00\x00\x00\x00e\x04\x00')
+        dw = np.swapaxes(self.data, 0, 2)
+        f.write(dw.tobytes())
+        f.write(b'\x00e\x04\x00')
+
+        f.write(b'\x0e\x00\x00\x00')
+        f.write('STATISTICS'.encode('ascii'))
+        f.write(b'\x01\x00\x00\x00')
+        f.write(np.int32(14))
+        f.write(b'\x00e\x04\x00')
+        ew = np.swapaxes(self.error, 0, 2)
+        f.write(ew.tobytes())
+        f.write(b'\x00e\x04\x00')
+        f.close()
 
 #
 # Read USRBIN binary file       
