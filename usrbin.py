@@ -120,19 +120,21 @@ class usrbin:
         f.write(self.Birk2)
         f.write(self.timeCutOff)
 
-        f.write(b'V\x00\x00\x00\x00e\x04\x00')
+        ndata = np.int32(self.nx * self.ny * self.nz * 4)
+        f.write(b'V\x00\x00\x00')
+        f.write(ndata)
         dw = np.swapaxes(self.data, 0, 2)
         f.write(dw.tobytes())
-        f.write(b'\x00e\x04\x00')
+        f.write(ndata)
 
         f.write(b'\x0e\x00\x00\x00')
         f.write('STATISTICS'.encode('ascii'))
         f.write(b'\x01\x00\x00\x00')
         f.write(np.int32(14))
-        f.write(b'\x00e\x04\x00')
+        f.write(ndata)
         ew = np.swapaxes(self.error, 0, 2)
         f.write(ew.tobytes())
-        f.write(b'\x00e\x04\x00')
+        f.write(ndata)
         f.close()
 
 #
